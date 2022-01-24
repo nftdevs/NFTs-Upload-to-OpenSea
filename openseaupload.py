@@ -132,7 +132,7 @@ def main_program_loop():
     while end_num >= start_num:
         print("Start creating NFT " +  loop_title + str(start_num))
         driver.get(collection_link)
-        # time.sleep(3)
+        time.sleep(3)
 
         wait_xpath('//*[@id="__next"]/div[1]/main/div/div/div[1]/span/a')
         additem = driver.find_element_by_xpath('//*[@id="__next"]/div[1]/main/div/div/div[1]/span/a')
@@ -188,16 +188,14 @@ def main_program_loop():
         wait_css_selector("button[type='submit']")
         listing = driver.find_element_by_css_selector("button[type='submit']")
         listing.click()
-        time.sleep(5)
         
-        wait_css_selector("button[class='Blockreact__Block-sc-1xf18x6-0 Buttonreact__StyledButton-sc-glfma3-0 bhqEJb fzwDgL']")
-        sign = driver.find_element_by_css_selector("button[class='Blockreact__Block-sc-1xf18x6-0 Buttonreact__StyledButton-sc-glfma3-0 bhqEJb fzwDgL']")
-        sign.click()
-        time.sleep(2)
+        # wait until the window is available.
+        while(len(driver.window_handles) != 2):
+            print('.', end='')
+            time.sleep(.5)
         
-        for handle in driver.window_handles:
-            if handle != main_page:
-                login_page = handle
+        login_page = driver.window_handles[1]
+        
         # change the control to signin page
         driver.switch_to.window(login_page)
         wait_css_selector("button[data-testid='request-signature__sign']")
