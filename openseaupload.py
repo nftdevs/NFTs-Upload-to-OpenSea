@@ -110,9 +110,11 @@ def main_program_loop():
     opt.add_experimental_option("debuggerAddress", "localhost:8989")
     driver = webdriver.Chrome(
         executable_path=project_path + "/chromedriver.exe",
-        chrome_options=opt,
+        # chrome_options=opt,
+        options=opt,
     )
     wait = WebDriverWait(driver, 60)
+    driver.execute_cdp_cmd("Page.setBypassCSP", {"enabled": True})
 
     ###wait for methods
     def wait_css_selector(code):
@@ -133,17 +135,17 @@ def main_program_loop():
         print("Start creating NFT " +  loop_title + str(start_num))
         driver.get(collection_link)
         # time.sleep(3)
-
+        print("step 1")
         wait_xpath('//*[@id="__next"]/div[1]/main/div/div/div[1]/span/a')
         additem = driver.find_element_by_xpath('//*[@id="__next"]/div[1]/main/div/div/div[1]/span/a')
         additem.click()
         time.sleep(1)
-
+        print("step 2")
         wait_xpath('//*[@id="media"]')
         imageUpload = driver.find_element_by_xpath('//*[@id="media"]')
         imagePath = os.path.abspath(file_path + "\\" + str(start_num) + "." + loop_file_format)  # change folder here
         imageUpload.send_keys(imagePath)
-
+        print("step 3")
         name = driver.find_element_by_xpath('//*[@id="name"]')
         name.send_keys(loop_title + str(start_num))  # +1000 for other folders #change name before "#"
         time.sleep(0.5)
@@ -157,6 +159,9 @@ def main_program_loop():
         time.sleep(0.5)
 
         # Select Polygon blockchain if applicable
+
+# if is_polygon.get(): create = driver.find_element_by_xpath('//*[@id="__next"]/div[1]/main/div/div/section/div[2]/form/div/div[1]/span/button') driver.execute_script("arguments[0].click();", create) time.sleep(1)
+        
         if is_polygon.get():
             blockchain_button = driver.find_element(By.XPATH, '//*[@id="__next"]/div[1]/main/div/div/section/div/form/div[7]/div/div[2]')
             blockchain_button.click()
@@ -181,9 +186,30 @@ def main_program_loop():
         sell = driver.find_element_by_xpath('//*[@id="__next"]/div[1]/main/div/div/div[1]/div/span[2]/a')
         sell.click()
 
+        wait_css_selector("#duration")
+        duration = driver.find_element_by_css_selector("#duration")        
+        duration.click()
+        time.sleep(1)
+        print("step 4")
+
+        wait_css_selector("main form > div:nth-child(3) > div >div:nth-child(3) > .tippy-box > .tippy-content >div>div >div:nth-child(1) > div > div:nth-child(2)")
+        dropdownarrow = driver.find_element_by_css_selector("main form > div:nth-child(3) > div >div:nth-child(3) > .tippy-box > .tippy-content >div>div >div:nth-child(1) > div > div:nth-child(2)")        
+        dropdownarrow.click()
+        time.sleep(1)
+        print("step 5")
+
+        wait_css_selector("main form > div:nth-child(3) > div >div:nth-child(3) > .tippy-box > .tippy-content >div>div >div:nth-child(1) > div > div:nth-child(3) ul > li:nth-child(3) >button")
+        onemonth = driver.find_element_by_css_selector("main form > div:nth-child(3) > div >div:nth-child(3) > .tippy-box > .tippy-content >div>div >div:nth-child(1) > div > div:nth-child(3) ul > li:nth-child(3) >button")        
+        onemonth.click()
+        time.sleep(1)
+        print("step 6")                
+
         wait_css_selector("input[placeholder='Amount']")
         amount = driver.find_element_by_css_selector("input[placeholder='Amount']")
+        amount.click()
         amount.send_keys(str(loop_price))
+        time.sleep(2)
+        print("step 7")
 
         wait_css_selector("button[type='submit']")
         listing = driver.find_element_by_css_selector("button[type='submit']")
