@@ -20,6 +20,8 @@ input_save_list = ["NFTs folder :", 0, 0, 0, 0, 0, 0, 0, 0]
 main_directory = os.path.join(sys.path[0])
 is_polygon = BooleanVar()
 is_polygon.set(False)
+list_only = BooleanVar()
+list_only.set(False)
 
 def open_chrome_profile():
     subprocess.Popen(
@@ -174,55 +176,58 @@ def main_program_loop():
         wait_css_selector("i[aria-label='Close']")
         cross = driver.find_element_by_css_selector("i[aria-label='Close']")
         cross.click()
-        time.sleep(1)
-
-        main_page = driver.current_window_handle
-        wait_xpath('//*[@id="__next"]/div[1]/main/div/div/div[1]/div/span[2]/a')
-        sell = driver.find_element_by_xpath('//*[@id="__next"]/div[1]/main/div/div/div[1]/div/span[2]/a')
-        sell.click()
-
-        wait_css_selector("input[placeholder='Amount']")
-        amount = driver.find_element_by_css_selector("input[placeholder='Amount']")
-        amount.send_keys(str(loop_price))
-
-        wait_css_selector("button[type='submit']")
-        listing = driver.find_element_by_css_selector("button[type='submit']")
-        listing.click()
         time.sleep(5)
+
+        if list_only.get() == 0:
+            main_page = driver.current_window_handle
+            wait_xpath('//*[@id="__next"]/div[1]/main/div/div/div[1]/div/span[2]/a')
+            sell = driver.find_element_by_xpath('//*[@id="__next"]/div[1]/main/div/div/div[1]/div/span[2]/a')
+            sell.click()
+
+            wait_css_selector("input[placeholder='Amount']")
+            amount = driver.find_element_by_css_selector("input[placeholder='Amount']")
+            amount.send_keys(str(loop_price))
+
+            wait_css_selector("button[type='submit']")
+            listing = driver.find_element_by_css_selector("button[type='submit']")
+            listing.click()
+            time.sleep(5)
         
-        wait_css_selector("button[class='Blockreact__Block-sc-1xf18x6-0 Buttonreact__StyledButton-sc-glfma3-0 bhqEJb fzwDgL']")
-        sign = driver.find_element_by_css_selector("button[class='Blockreact__Block-sc-1xf18x6-0 Buttonreact__StyledButton-sc-glfma3-0 bhqEJb fzwDgL']")
-        sign.click()
-        time.sleep(2)
+            wait_css_selector("button[class='Blockreact__Block-sc-1xf18x6-0 Buttonreact__StyledButton-sc-glfma3-0 bhqEJb fzwDgL']")
+            sign = driver.find_element_by_css_selector("button[class='Blockreact__Block-sc-1xf18x6-0 Buttonreact__StyledButton-sc-glfma3-0 bhqEJb fzwDgL']")
+            sign.click()
+            time.sleep(2)
         
-        for handle in driver.window_handles:
-            if handle != main_page:
-                login_page = handle
-        # change the control to signin page
-        driver.switch_to.window(login_page)
-        wait_css_selector("button[data-testid='request-signature__sign']")
-        sign = driver.find_element_by_css_selector("button[data-testid='request-signature__sign']")
-        sign.click()
-        time.sleep(1)
+            for handle in driver.window_handles:
+                if handle != main_page:
+                    login_page = handle
+            # change the control to signin page
+            driver.switch_to.window(login_page)
+            wait_css_selector("button[data-testid='request-signature__sign']")
+            sign = driver.find_element_by_css_selector("button[data-testid='request-signature__sign']")
+            sign.click()
+            time.sleep(1)
         
-        # change control to main page
-        driver.switch_to.window(main_page)
-        time.sleep(1)
+            # change control to main page
+            driver.switch_to.window(main_page)
+            time.sleep(1)
 
         start_num = start_num + 1
         print('NFT creation completed!')
 
 #####BUTTON ZONE#######
-button_save = tkinter.Button(root, width=20, text="Save Form", command=save) 
-button_save.grid(row=23, column=1)
-button_start = tkinter.Button(root, width=20, bg="green", fg="white", text="Start", command=main_program_loop)
-button_start.grid(row=25, column=1)
 isPolygon = tkinter.Checkbutton(root, text='Polygon Blockchain', var=is_polygon)
 isPolygon.grid(row=20, column=0)
-open_browser = tkinter.Button(root, width=20,  text="Open Chrome Browser", command=open_chrome_profile)
-open_browser.grid(row=22, column=1)
+listOnly = tkinter.Checkbutton(root, text='List Only', var=list_only)
+listOnly.grid(row=21, column=0)
 upload_folder_input_button = tkinter.Button(root, width=20, text="Add NFTs Upload Folder", command=upload_folder_input)
-upload_folder_input_button.grid(row=21, column=1)
+upload_folder_input_button.grid(row=22, column=1)
+open_browser = tkinter.Button(root, width=20,  text="Open Chrome Browser", command=open_chrome_profile)
+open_browser.grid(row=23, column=1)
+button_save = tkinter.Button(root, width=20, text="Save Form", command=save) 
+button_save.grid(row=24, column=1)
+button_start = tkinter.Button(root, width=20, bg="green", fg="white", text="Start", command=main_program_loop)
+button_start.grid(row=25, column=1)
 try:
     with open(save_file_path(), "rb") as infile:
         new_dict = pickle.load(infile)
